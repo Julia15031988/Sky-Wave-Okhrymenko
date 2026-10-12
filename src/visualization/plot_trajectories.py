@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from src.config import TrajectoryConfig
-from src.data_generation.noise import add_gaussian_noise
+from src.data_generation.noise import NoiseGenerator
 from src.data_generation.trajectory_generator import TrajectoryGenerator
 
 
@@ -34,10 +34,12 @@ def plot_trajectories(
     plt.xlabel("X position")
     plt.ylabel("Y position")
     plt.title("SkyWave: True vs Noisy Trajectory")
+
     plt.legend()
     plt.grid(True)
     plt.axis("equal")
-    plt.show()
+
+    plt.show(block=True)
 
 
 if __name__ == "__main__":
@@ -46,10 +48,14 @@ if __name__ == "__main__":
     generator = TrajectoryGenerator(config)
     true_trajectory = generator.generate_linear()
 
-    noisy_trajectory = add_gaussian_noise(
-        true_trajectory,
-        noise_std=config.noise_std,
-        random_seed=config.random_seed,
+    noise_generator = NoiseGenerator(config)
+    noisy_trajectory = noise_generator.add_gaussian_noise(
+        true_trajectory
     )
 
-    plot_trajectories(true_trajectory, noisy_trajectory)
+    print("SkyWave visualization is starting...")
+
+    plot_trajectories(
+        true_trajectory,
+        noisy_trajectory,
+    )
