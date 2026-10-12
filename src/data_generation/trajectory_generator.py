@@ -23,3 +23,22 @@ class TrajectoryGenerator:
         trajectory = np.column_stack((x, y))
 
         return trajectory
+
+    def generate_circular(
+            self,
+            radius: float = 5.0,
+            angular_speed: float = 0.3,
+    ) -> np.ndarray:
+        """Generate a circular trajectory with constant angular speed."""
+        if radius <= 0:
+            raise ValueError("radius must be positive")
+
+        time = np.arange(self.config.num_steps) * self.config.time_step
+
+        angles = angular_speed * time
+
+        x = self.config.initial_x + radius * np.cos(angles)
+        y = self.config.initial_y + radius * np.sin(angles)
+
+        return np.column_stack((x, y))
+
