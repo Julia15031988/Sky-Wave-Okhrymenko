@@ -64,18 +64,16 @@ class KalmanTrajectoryPredictor:
 
     def update(self, measurement: np.ndarray) -> np.ndarray:
         """Predict and correct the state using a measurement."""
-
         self.filter.predict()
         self.filter.update(measurement)
 
         return self.filter.x[:2].copy()
 
     def filter_trajectory(
-            self,
-            measurements: np.ndarray,
+        self,
+        measurements: np.ndarray,
     ) -> np.ndarray:
         """Estimate positions from noisy trajectory measurements."""
-
         estimated_positions = []
 
         for measurement in measurements:
@@ -83,3 +81,26 @@ class KalmanTrajectoryPredictor:
             estimated_positions.append(estimated_position)
 
         return np.array(estimated_positions)
+
+    def predict_next_position(self) -> np.ndarray:
+        """Predict the next position without a new measurement."""
+        predicted_state = self.filter.F @ self.filter.x
+
+        return predicted_state[:2].copy()
+
+    def predict_future_trajectory(
+        self,
+        steps: int,
+    ) -> np.ndarray:
+        """Predict future positions without new measurements."""
+        if not isinstance(steps, int) or isinstance(steps, bool) or steps < 1:
+            raise ValueError("steps must be a positive integer")
+
+        state = self.filter.x.copy()
+        predictions = []
+
+        for _ in range(steps):
+            state = self.filter.F @ state
+            predictions.append(state[:2].copy())
+
+        return np.array(predictions)
