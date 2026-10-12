@@ -4,6 +4,7 @@ from src.config import TrajectoryConfig
 from src.data_generation.noise import NoiseGenerator
 from src.data_generation.trajectory_generator import TrajectoryGenerator
 from src.models.kalman_filter import KalmanTrajectoryPredictor
+from src.evaluation.metrics import calculate_mae, calculate_rmse
 
 
 def main() -> None:
@@ -26,6 +27,24 @@ def main() -> None:
 
     # 5. Estimate trajectory
     kalman_trajectory = kalman.filter_trajectory(noisy_trajectory)
+
+    # Evaluate noisy measurements
+    noisy_mae = calculate_mae(true_trajectory, noisy_trajectory)
+    noisy_rmse = calculate_rmse(true_trajectory, noisy_trajectory)
+
+    # Evaluate Kalman estimates
+    kalman_mae = calculate_mae(true_trajectory, kalman_trajectory)
+    kalman_rmse = calculate_rmse(true_trajectory, kalman_trajectory)
+
+    print("\n--- SkyWave: Kalman Filter Evaluation ---")
+
+    print("\nNoisy observations:")
+    print(f"MAE:  {noisy_mae:.4f}")
+    print(f"RMSE: {noisy_rmse:.4f}")
+
+    print("\nKalman estimates:")
+    print(f"MAE:  {kalman_mae:.4f}")
+    print(f"RMSE: {kalman_rmse:.4f}")
 
     # 6. Visualize results
     plt.figure(figsize=(10, 6))
