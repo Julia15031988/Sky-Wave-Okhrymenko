@@ -69,3 +69,17 @@ class KalmanTrajectoryPredictor:
         self.filter.update(measurement)
 
         return self.filter.x[:2].copy()
+
+    def filter_trajectory(
+            self,
+            measurements: np.ndarray,
+    ) -> np.ndarray:
+        """Estimate positions from noisy trajectory measurements."""
+
+        estimated_positions = []
+
+        for measurement in measurements:
+            estimated_position = self.update(measurement)
+            estimated_positions.append(estimated_position)
+
+        return np.array(estimated_positions)
